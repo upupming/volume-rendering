@@ -7,13 +7,13 @@ on:
 env:
   ACTIONS_ALLOW_UNSECURE_COMMANDS: true
   user: upupming
-  name: vscode-qt-qml-vcpkg-template
+  name: volume-rendering
   # Disk C has 90GB free size, while disk D only has 11.3GB free disk size
   # Override github envs, for vcpkg action to work properly: https://github.com/lukka/run-vcpkg/blob/36477d05567caebad06ad53713dcbde226135205/dist/index.js#L4891
-  GITHUB_WORKSPACE: C:/vscode-qt-qml-vcpkg-template
-  BUILD_SOURCESDIRECTORY: C:/vscode-qt-qml-vcpkg-template
-  srcDir: C:/vscode-qt-qml-vcpkg-template
-  buildDir: C:/vscode-qt-qml-vcpkg-template/build
+  GITHUB_WORKSPACE: C:/volume-rendering
+  BUILD_SOURCESDIRECTORY: C:/volume-rendering
+  srcDir: C:/volume-rendering
+  buildDir: C:/volume-rendering/build
 
 jobs:
   check_commit_msg:

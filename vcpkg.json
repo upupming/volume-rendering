@@ -1,6 +1,6 @@
 {
     "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg/master/scripts/vcpkg.schema.json",
-    "name": "vscode-qt-qml-vcpkg-template",
+    "name": "volume-rendering",
     "version-string": "0.0.1",
     "license": "MIT",
     "builtin-baseline": "698c44440375cce33b6f671c87ad1705d943d327",
