@@ -3,11 +3,17 @@
     "name": "volume-rendering",
     "version-string": "0.0.1",
     "license": "MIT",
-    "builtin-baseline": "698c44440375cce33b6f671c87ad1705d943d327",
+    "builtin-baseline": "b761301f77a68bbe443034f1ed6ccebbd52614e8",
     "dependencies": [
         {
-            "name": "sqlite3",
-            "version>=": "3.35.5",
+            "name": "glm",
+            "version>=": "0.9.9.8#1",
+            "default-features": true,
+            "platform": "windows & x64"
+        },
+        {
+            "name": "stb",
+            "version>=": "2020-09-14",
             "default-features": true,
             "platform": "windows & x64"
         }

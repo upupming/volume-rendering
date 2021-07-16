@@ -1,39 +1,32 @@
-#include <sqlite3.h>
+#include <QApplication>
+#include <array>
+#include <glm/glm.hpp>
+#include <iostream>
 
-#include <QGuiApplication>
-#include <QQmlApplicationEngine>
-#include <QQuickItem>
-#include <QQuickWindow>
+#include "main_window.h"
+#include "raw_reader.h"
+#include "volume_rendering.h"
 
 int main(int argc, char *argv[]) {
-    QGuiApplication app(argc, argv);
-    qDebug() << "Hello world";
-    QQmlApplicationEngine engine;
-    const QUrl url(QStringLiteral("qrc:/main.qml"));
-    QObject::connect(
-        &engine, &QQmlApplicationEngine::objectCreated,
-        &app, [url](QObject *obj, const QUrl &objUrl) {
-            if (!obj && url == objUrl)
-                QCoreApplication::exit(-1);
-        },
-        Qt::QueuedConnection);
-    engine.load(url);
+    QApplication app(argc, argv);
 
-    // --- Test SQLite3 (Copy DLLs)
-    sqlite3 *db;
-    char *zErrMsg = 0;
-    int rc;
+    QCoreApplication::setOrganizationName("upupming");
+    app.setApplicationName("Volume Rendering");
+    app.setApplicationVersion(QT_VERSION_STR);
 
-    rc = sqlite3_open("test.db", &db);
+#if _DEBUG
+    std::cout << "Debug mode" << std::endl;
+#else
+    std::cout << "Release mode" << std::endl;
+#endif
 
-    if (rc) {
-        fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
-        return (0);
-    } else {
-        fprintf(stderr, "Opened database successfully\n");
-    }
-    sqlite3_close(db);
-    // system("pause");
+#ifndef QT_NO_OPENGL
+    MainWindow mainWin;
+    mainWin.show();
 
+#else
+    QLabel note("OpenGL Support required");
+    note.show();
+#endif
     return app.exec();
 }

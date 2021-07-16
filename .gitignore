@@ -2,3 +2,4 @@ build
 *.db
 build-release
 volume-rendering-release-*.zip
+*.raw

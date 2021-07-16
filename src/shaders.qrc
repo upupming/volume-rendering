@@ -1,0 +1,6 @@
+<RCC>
+<qresource prefix="/">
+<file>shaders/alpha_blending.vs</file>
+<file>shaders/alpha_blending.fs</file>
+</qresource>
+</RCC>
