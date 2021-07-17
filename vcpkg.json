@@ -3,7 +3,7 @@
     "name": "volume-rendering",
     "version-string": "0.0.1",
     "license": "MIT",
-    "builtin-baseline": "b761301f77a68bbe443034f1ed6ccebbd52614e8",
+    "builtin-baseline": "ee9de9fcc40bbb80d14debd14cbc55eff0158be7",
     "dependencies": [
         {
             "name": "glm",
