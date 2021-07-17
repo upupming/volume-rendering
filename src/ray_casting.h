@@ -4,6 +4,8 @@
 #include <QtMath>
 #include <QtWidgets>
 #include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtc/type_ptr.hpp>
 #include <iostream>
 
 #include "trackball.h"
@@ -41,10 +43,10 @@ class RayCasting : public QOpenGLWidget, protected QOpenGLExtraFunctions {
 
     QPointF prevMouse;
     bool mouseLeftPressed = false, mouseRightPressed = false, mouseMiddlePressed = false;
-    TrackBall trackball;
-    TrackBall sceneTrackball;
-    // model 放在原点并且缩放到 [0, 1] 区间，我们从 z=3 往 -z 方向看，确保能够看到 model 整体全貌，不管它有多大
-    glm::vec3 eye = {0, 0, 3},
+    float curr_quat[4] = {0, 0, 0, 1};
+    float prev_quat[4] = {0, 0, 0, 1};
+    // model 放在原点并且缩放到 [-0.5, 0.5] 区间，我们从 z=3 往 -z 方向看，确保能够看到 model 整体全貌，不管它有多大
+    glm::vec3 eye = {0, 0, 1.2},
               lookat = {0, 0, 0}, up = {0, 1, 0};
 
     QOpenGLBuffer arrayBuf;

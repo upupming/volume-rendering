@@ -1,88 +1,75 @@
-/****************************************************************************
-**
-** Copyright (C) 2016 The Qt Company Ltd.
-** Contact: https://www.qt.io/licensing/
-**
-** This file is part of the demonstration applications of the Qt Toolkit.
-**
-** $QT_BEGIN_LICENSE:BSD$
-** Commercial License Usage
-** Licensees holding valid commercial Qt licenses may use this file in
-** accordance with the commercial license agreement provided with the
-** Software or, alternatively, in accordance with the terms contained in
-** a written agreement between you and The Qt Company. For licensing terms
-** and conditions see https://www.qt.io/terms-conditions. For further
-** information use the contact form at https://www.qt.io/contact-us.
-**
-** BSD License Usage
-** Alternatively, you may use this file under the terms of the BSD license
-** as follows:
-**
-** "Redistribution and use in source and binary forms, with or without
-** modification, are permitted provided that the following conditions are
-** met:
-**   * Redistributions of source code must retain the above copyright
-**     notice, this list of conditions and the following disclaimer.
-**   * Redistributions in binary form must reproduce the above copyright
-**     notice, this list of conditions and the following disclaimer in
-**     the documentation and/or other materials provided with the
-**     distribution.
-**   * Neither the name of The Qt Company Ltd nor the names of its
-**     contributors may be used to endorse or promote products derived
-**     from this software without specific prior written permission.
-**
-**
-** THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-** "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-** LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-** A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-** OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-** SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-** LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-** DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-** THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-** (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-** OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE."
-**
-** $QT_END_LICENSE$
-**
-****************************************************************************/
+/*
+ * (c) Copyright 1993, 1994, Silicon Graphics, Inc.
+ * ALL RIGHTS RESERVED
+ * Permission to use, copy, modify, and distribute this software for
+ * any purpose and without fee is hereby granted, provided that the above
+ * copyright notice appear in all copies and that both the copyright notice
+ * and this permission notice appear in supporting documentation, and that
+ * the name of Silicon Graphics, Inc. not be used in advertising
+ * or publicity pertaining to distribution of the software without specific,
+ * written prior permission.
+ *
+ * THE MATERIAL EMBODIED ON THIS SOFTWARE IS PROVIDED TO YOU "AS-IS"
+ * AND WITHOUT WARRANTY OF ANY KIND, EXPRESS, IMPLIED OR OTHERWISE,
+ * INCLUDING WITHOUT LIMITATION, ANY WARRANTY OF MERCHANTABILITY OR
+ * FITNESS FOR A PARTICULAR PURPOSE.  IN NO EVENT SHALL SILICON
+ * GRAPHICS, INC.  BE LIABLE TO YOU OR ANYONE ELSE FOR ANY DIRECT,
+ * SPECIAL, INCIDENTAL, INDIRECT OR CONSEQUENTIAL DAMAGES OF ANY
+ * KIND, OR ANY DAMAGES WHATSOEVER, INCLUDING WITHOUT LIMITATION,
+ * LOSS OF PROFIT, LOSS OF USE, SAVINGS OR REVENUE, OR THE CLAIMS OF
+ * THIRD PARTIES, WHETHER OR NOT SILICON GRAPHICS, INC.  HAS BEEN
+ * ADVISED OF THE POSSIBILITY OF SUCH LOSS, HOWEVER CAUSED AND ON
+ * ANY THEORY OF LIABILITY, ARISING OUT OF OR IN CONNECTION WITH THE
+ * POSSESSION, USE OR PERFORMANCE OF THIS SOFTWARE.
+ *
+ * US Government Users Restricted Rights
+ * Use, duplication, or disclosure by the Government is subject to
+ * restrictions set forth in FAR 52.227.19(c)(2) or subparagraph
+ * (c)(1)(ii) of the Rights in Technical Data and Computer Software
+ * clause at DFARS 252.227-7013 and/or in similar or successor
+ * clauses in the FAR or the DOD or NASA FAR Supplement.
+ * Unpublished-- rights reserved under the copyright laws of the
+ * United States.  Contractor/manufacturer is Silicon Graphics,
+ * Inc., 2011 N.  Shoreline Blvd., Mountain View, CA 94039-7311.
+ *
+ * OpenGL(TM) is a trademark of Silicon Graphics, Inc.
+ */
+/*
+ * trackball.h
+ * A virtual trackball implementation
+ * Written by Gavin Bell for Silicon Graphics, November 1988.
+ */
 
-#ifndef TRACKBALL_H
-#define TRACKBALL_H
+/*
+ * Pass the x and y coordinates of the last and current positions of
+ * the mouse, scaled so they are from (-1.0 ... 1.0).
+ *
+ * The resulting rotation is returned as a quaternion rotation in the
+ * first paramater.
+ */
+void trackball(float q[4], float p1x, float p1y, float p2x, float p2y);
 
-#include <QtWidgets>
+void negate_quat(float *q, float *qn);
 
-#include <QtGui/qvector3d.h>
-#include <QtGui/qquaternion.h>
+/*
+ * Given two quaternions, add them together to get a third quaternion.
+ * Adding quaternions to get a compound rotation is analagous to adding
+ * translations to get a compound translation.  When incrementally
+ * adding rotations, the first argument here should be the new
+ * rotation, the second and third the total rotation (which will be
+ * over-written with the resulting new total rotation).
+ */
+void add_quats(float *q1, float *q2, float *dest);
 
-class TrackBall
-{
-public:
-    enum TrackMode
-    {
-        Plane,
-        Sphere,
-    };
-    TrackBall(TrackMode mode = Sphere);
-    TrackBall(float angularVelocity, const QVector3D& axis, TrackMode mode = Sphere);
-    // coordinates in [-1,1]x[-1,1]
-    void push(const QPointF& p, const QQuaternion &transformation);
-    void move(const QPointF& p, const QQuaternion &transformation);
-    void release(const QPointF& p, const QQuaternion &transformation);
-    void start(); // starts clock
-    void stop(); // stops clock
-    QQuaternion rotation() const;
-private:
-    QQuaternion m_rotation;
-    QVector3D m_axis;
-    float m_angularVelocity;
+/*
+ * A useful function, builds a rotation matrix in Matrix based on
+ * given quaternion.
+ */
+void build_rotmatrix(float m[4][4], const float q[4]);
 
-    QPointF m_lastPos;
-    QTime m_lastTime;
-    bool m_paused;
-    bool m_pressed;
-    TrackMode m_mode;
-};
-
-#endif
+/*
+ * This function computes a quaternion based on an axis (defined by
+ * the given vector) and an angle about which to rotate.  The angle is
+ * expressed in radians.  The result is put into the third argument.
+ */
+void axis_to_quat(float a[3], float phi, float q[4]);

@@ -107,12 +107,12 @@ vec4 color_transfer(float ratio)
 }
 
 // Estimate normal from a finite difference approximation of the gradient
-vec3 normal(vec3 position)
+vec3 normal(vec3 position,float intensity)
 {
     float d=stepLength;
-    float dx=texture(volume,position+vec3(d,0,0)).r-texture(volume,position+vec3(-d,0,0)).r;
-    float dy=texture(volume,position+vec3(0,d,0)).r-texture(volume,position+vec3(0,-d,0)).r;
-    float dz=texture(volume,position+vec3(0,0,d)).r-texture(volume,position+vec3(0,0,-d)).r;
+    float dx=texture(volume,position+vec3(d,0,0)).r-intensity;
+    float dy=texture(volume,position+vec3(0,d,0)).r-intensity;
+    float dz=texture(volume,position+vec3(0,0,d)).r-intensity;
     return normalize(normalMatrix*((reverseGradient?-1:1)*vec3(dx,dy,dz)));
 }
 
@@ -147,15 +147,15 @@ void main(){
         // 传输函数的颜色作为材质的 ambient 和 diffuse 属性
         vec4 ambient=light.ambient*c;
         // diffuse
-        vec3 norm=normal(position);
+        vec3 norm=normal(position,intensity);
         vec3 lightDir=normalize(light.position-position);
         float diff=max(dot(norm,lightDir),0.);
         vec4 diffuse=light.diffuse*(diff*c);
         
         // specular
         vec3 viewDir=-normalize(v);
-        vec3 reflectDir=reflect(-lightDir,norm);
-        float spec=pow(max(dot(viewDir,reflectDir),0.),material.shininess);
+        vec3 h=normalize(lightDir+viewDir);
+        float spec=pow(max(dot(norm,h),0.),material.shininess);
         vec4 specular=light.specular*(spec*material.specular);
         
         c=diffuse+specular+ambient;

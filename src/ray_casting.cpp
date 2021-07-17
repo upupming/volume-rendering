@@ -81,13 +81,15 @@ void RayCasting::paintGL() {
     QMatrix4x4 model, view, projection;
 
     auto physicalSize = glm::vec3(volumeData->dim) * volumeData->spacing;
-    auto ratio2LogestSide = physicalSize / std::max({physicalSize.x, physicalSize.y, physicalSize.z});
+    auto identityCubeSize = physicalSize / std::max({physicalSize.x, physicalSize.y, physicalSize.z});
     // 将边长为 2 的立方体变成满足 ratio2LogestSide 比例的长方体
-    QVector3D sideLen = QVector3D(ratio2LogestSide.x, ratio2LogestSide.y, ratio2LogestSide.z) / 2.f;
+    QVector3D sideLen = QVector3D(identityCubeSize.x, identityCubeSize.y, identityCubeSize.z) / 2.f;
     model.scale(sideLen);
 
-    view.translate(0, 0, -2);
-    view.rotate(trackball.rotation());
+    view.rotate(QQuaternion(curr_quat[3], -curr_quat[0], -curr_quat[1], -curr_quat[2]));
+    auto lookAtMatrix = glm::lookAt(eye, lookat, up);
+    auto p = glm::value_ptr(lookAtMatrix);
+    view = QMatrix4x4(p).transposed() * view;
 
     float aspectRatio = (float)width() / height();
     projection.perspective(fov, aspectRatio, 0.1f, 100.0f);
@@ -163,21 +165,57 @@ QPointF RayCasting::pixel_pos_to_view_pos(const QPointF& p) {
                    1.0 - 2.0 * float(p.y()) / height());
 }
 
-void RayCasting::mousePressEvent(QMouseEvent* event) {
-    if (event->buttons() & Qt::LeftButton) {
-        trackball.push(pixel_pos_to_view_pos(event->pos()), sceneTrackball.rotation().conjugated());
+void RayCasting::mousePressEvent(QMouseEvent* e) {
+    // Save mouse press position
+    prevMouse = e->localPos();
+    if (e->button() == Qt::MouseButton::LeftButton) {
+        mouseLeftPressed = true;
+        trackball(prev_quat, 0.0, 0.0, 0.0, 0.0);
+    } else if (e->button() == Qt::MouseButton::MiddleButton) {
+        mouseMiddlePressed = true;
+    } else if (e->button() == Qt::MouseButton::RightButton) {
+        mouseRightPressed = true;
     }
 }
-void RayCasting::mouseReleaseEvent(QMouseEvent* event) {
-    if (event->button() == Qt::LeftButton) {
-        trackball.release(pixel_pos_to_view_pos(event->pos()), sceneTrackball.rotation().conjugated());
+
+void RayCasting::mouseReleaseEvent(QMouseEvent* e) {
+    if (e->button() == Qt::MouseButton::LeftButton) {
+        mouseLeftPressed = false;
+    } else if (e->button() == Qt::MouseButton::MiddleButton) {
+        mouseMiddlePressed = false;
+    } else if (e->button() == Qt::MouseButton::RightButton) {
+        mouseRightPressed = false;
     }
 }
-void RayCasting::mouseMoveEvent(QMouseEvent* event) {
-    if (event->buttons() & Qt::LeftButton) {
-        trackball.move(pixel_pos_to_view_pos(event->pos()), sceneTrackball.rotation().conjugated());
-    } else {
-        trackball.release(pixel_pos_to_view_pos(event->pos()), sceneTrackball.rotation().conjugated());
+void RayCasting::mouseMoveEvent(QMouseEvent* e) {
+    float rotScale = 1.0f;
+    float transScale = 2.0f;
+
+    auto mouse = e->localPos();
+    // 左键旋转
+    if (mouseLeftPressed) {
+        trackball(
+            prev_quat,
+            rotScale * (2.0f * prevMouse.x() - width()) / (float)width(),
+            rotScale * (height() - 2.0f * prevMouse.y()) / (float)height(),
+            rotScale * (2.0f * mouse.x() - width()) / (float)width(),
+            rotScale * (height() - 2.0f * mouse.y()) / (float)height());
+
+        add_quats(prev_quat, curr_quat, curr_quat);
     }
+    // 中间键移动
+    else if (mouseMiddlePressed) {
+        eye[0] -= transScale * (mouse.x() - prevMouse.x()) / (float)width();
+        lookat[0] -= transScale * (mouse.x() - prevMouse.x()) / (float)width();
+        eye[1] += transScale * (mouse.y() - prevMouse.y()) / (float)height();
+        lookat[1] += transScale * (mouse.y() - prevMouse.y()) / (float)height();
+    }
+    // 右键缩放
+    else if (mouseRightPressed) {
+        eye[2] += transScale * (mouse.y() - prevMouse.y()) / (float)height();
+        lookat[2] += transScale * (mouse.y() - prevMouse.y()) / (float)height();
+    }
+    prevMouse = mouse;
+    // Request an update
     update();
 }
