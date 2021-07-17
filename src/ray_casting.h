@@ -32,6 +32,7 @@ class RayCasting : public QOpenGLWidget, protected QOpenGLExtraFunctions {
 
     VolumeData* volumeData;
     GLuint volumeTexture = 0;
+    QColor backgroundColor = QColor(41, 65, 71);
 
     QOpenGLShaderProgram program;
     QMatrix4x4 projection;

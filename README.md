@@ -109,6 +109,11 @@ $$
 - Apart from better image quality compared to bi-linear interpolation, this allows the rendering of slices with arbitrary orientation with respect to the volume, making it possible to maintain a constant sampling rate for all pixels and viewing directions.
 - Additionally, a single 3D texture suffices for storing the entire volume, if there is enough texture memory available.
 
+## 踩坑
+
+1. `glTexImage3D` 的 `depth` 参数才是数组的第一维，如果传错了会导致索引出现混乱。
+    1. 如果要传入 `unsigned short` 数据，需要使用 `usampler3D`，直接使用 `sampler3D` 的话，得到的结果全是 0。参考: https://stackoverflow.com/a/23410610/8242705
+
 ## 参考资料
 
 1. [CUDA CMake](https://cliutils.gitlab.io/modern-cmake/chapters/packages/CUDA.html)
@@ -122,3 +127,4 @@ $$
 9. Data Vis Book
 10. [Chapter 39. Volume Rendering Techniques](https://developer.nvidia.com/gpugems/gpugems/part-vi-beyond-triangles/chapter-39-volume-rendering-techniques)
 11. https://cgl.ethz.ch/teaching/former/scivis_07/Notes/Handouts/03-raycasting.pdf
+12. [slab 光线和 box 求交法](materials/03raytracing1.pdf)

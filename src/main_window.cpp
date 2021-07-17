@@ -1,7 +1,6 @@
 ﻿#include "main_window.h"
 
 MainWindow::MainWindow() {
-    readDataProcess = QtConcurrent::run(this, &MainWindow::readData);
     readSettings();
 
     QWidget *mWidget = new QWidget;
@@ -16,6 +15,9 @@ MainWindow::MainWindow() {
 
     connect(this, &MainWindow::readVolumeDataFinished,
             this, &MainWindow::updateRayCasting);
+
+    // 在后面一点执行，避免出现多线程执行完了，但是还没有初始化完 slots 的情况
+    readDataProcess = QtConcurrent::run(this, &MainWindow::readData);
 }
 
 MainWindow::~MainWindow() {

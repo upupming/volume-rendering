@@ -34,7 +34,8 @@ void RayCasting::setVolumeData(VolumeData* volumeData) {
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_3D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         // 注意 depth 是最外面一层
-        glTexImage3D(GL_TEXTURE_3D, 0, GL_RED, volumeData->dim[1], volumeData->dim[2], volumeData->dim[0], 0, GL_RED, GL_FLOAT, volumeData->normailzedData);
+        glTexImage3D(GL_TEXTURE_3D, 0, GL_R16UI, volumeData->dim[1], volumeData->dim[2], volumeData->dim[0], 0, GL_RED_INTEGER, GL_UNSIGNED_SHORT, volumeData->data);
+        glGenerateMipmap(GL_TEXTURE_3D);
         glBindTexture(GL_TEXTURE_3D, 0);
 
         update();
@@ -44,7 +45,7 @@ void RayCasting::setVolumeData(VolumeData* volumeData) {
 void RayCasting::initializeGL() {
     initializeOpenGLFunctions();
 
-    glClearColor(0, 0, 0, 1);
+    glClearColor(backgroundColor.redF(), backgroundColor.greenF(), backgroundColor.blueF(), backgroundColor.alphaF());
 
     initShaders();
 
@@ -85,7 +86,7 @@ void RayCasting::paintGL() {
     QVector3D sideLen = QVector3D(ratio2LogestSide.x, ratio2LogestSide.y, ratio2LogestSide.z) / 2.f;
     model.scale(sideLen);
 
-    view.translate(0, 0, -3);
+    view.translate(0, 0, -2);
     view.rotate(trackball.rotation());
 
     float aspectRatio = (float)width() / height();
@@ -105,9 +106,19 @@ void RayCasting::paintGL() {
 
     program.setUniformValue("top", sideLen);
     program.setUniformValue("bottom", -sideLen);
-    program.setUniformValue("stepLength", 0.01f);
-    program.setUniformValue("backgroundColor", QVector3D(0, 0, 0));
+    program.setUniformValue("stepLength", 0.001f);
+    program.setUniformValue("backgroundColor", QVector3D(backgroundColor.redF(), backgroundColor.greenF(), backgroundColor.blueF()));
     program.setUniformValue("gamma", 2.2f);
+
+    program.setUniformValue("normalMatrix", (view * model).normalMatrix());
+    program.setUniformValue("light.position", 1.2f, 1.0f, 2.0f);
+    program.setUniformValue("light.ambient", 0.1f, 0.1f, 0.1f, 0.1f);
+    program.setUniformValue("light.diffuse", 1.0f, 1.0f, 1.0f, 1.0f);
+    program.setUniformValue("light.specular", 1.0f, 1.0f, 1.0f, 1.0f);
+    // material properties
+    program.setUniformValue("material.specular", 1.f, 1.f, 1.f, 0.f);
+    program.setUniformValue("material.shininess", 32.0f);
+    program.setUniformValue("reverseGradient", volumeData->reverseGradientDirection);
 
     // Tell OpenGL which VBOs to use
     if (!arrayBuf.bind()) {
