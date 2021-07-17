@@ -28,6 +28,8 @@ uniform float focalLength;
 uniform float stepLength;
 uniform float gamma;
 uniform bool reverseGradient;
+uniform float opacityThreshold;
+uniform float colorThreshold;
 
 uniform usampler3D volume;
 
@@ -83,9 +85,9 @@ vec4 color_transfer(float ratio)
     vec4 ans=vec4(0,0,0,0);
     
     const int n=3,MAX=4946;
-    float opacityRatio[n]=float[](0,1800.f,4946);
+    float opacityRatio[n]=float[](0,opacityThreshold,4946);
     float opacityVal[n]=float[](0,0,1);
-    float colorRatio[n]=float[](0,2482.f,4946);
+    float colorRatio[n]=float[](0,colorThreshold,4946);
     vec3 colorVal[n]=vec3[](
         vec3(.23,.29,.75),
         vec3(.098,.3176,.7922),

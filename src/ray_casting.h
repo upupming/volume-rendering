@@ -17,6 +17,20 @@ class RayCasting : public QOpenGLWidget, protected QOpenGLExtraFunctions {
     explicit RayCasting(VolumeData* volumeData = nullptr);
     ~RayCasting();
     void setVolumeData(VolumeData* volumeData);
+    inline void setOpacityThreshold(float val) {
+        opacityThreshold = val;
+        update();
+    }
+    inline float getOpacityThreshold() {
+        return opacityThreshold;
+    }
+    inline float getColorThreshold() {
+        return colorThreshold;
+    }
+    inline void setColorThreshold(float val) {
+        colorThreshold = val;
+        update();
+    }
 
    protected:
     void mousePressEvent(QMouseEvent* e) override;
@@ -30,6 +44,8 @@ class RayCasting : public QOpenGLWidget, protected QOpenGLExtraFunctions {
     void initShaders();
 
    private:
+    float opacityThreshold = 1800.f, colorThreshold = 2482.f;
+
     QPointF pixel_pos_to_view_pos(const QPointF& p);
 
     VolumeData* volumeData;

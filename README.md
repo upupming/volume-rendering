@@ -4,6 +4,8 @@
 
 Raycasting 实现的 Volume Rendering 算法。
 
+![result](img/result.png)
+
 > Raycasting is not the same as raytracing! Raycasting is a fast semi-3D technique that works in realtime even on 4MHz graphical calculators, while raytracing is a realistic rendering technique that supports reflections and shadows in true 3D scenes, and only recently computers became fast enough to do it in realtime for reasonably high resolutions and complex scenes.
 
 Raycasting 和 Raytracing 有区别，前者用来直接渲染体数据，后者则是用来对表面（例如 mesh 数据）进行渲染，获得具有阴影等真实的结果。

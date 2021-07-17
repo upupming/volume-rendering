@@ -6,9 +6,29 @@ MainWindow::MainWindow() {
     QWidget *mWidget = new QWidget;
 
     QVBoxLayout *vBoxLayout = new QVBoxLayout;
+    QHBoxLayout *hBoxLayout1 = new QHBoxLayout;
+    QHBoxLayout *hBoxLayout2 = new QHBoxLayout;
 
     rayCasting = new RayCasting;
-    vBoxLayout->addWidget(rayCasting);
+    vBoxLayout->addWidget(rayCasting, 10);
+
+    opacityThresholdSlider = createThresholdSlider(
+        [=](int value) {
+            rayCasting->setOpacityThreshold(value);
+        },
+        rayCasting->getOpacityThreshold());
+    colorThresholdSlider = createThresholdSlider(
+        [=](int value) {
+            rayCasting->setColorThreshold(value);
+        },
+        rayCasting->getColorThreshold());
+    hBoxLayout1->addWidget(new QLabel("Opacity threshold (transfer function)"));
+    hBoxLayout1->addWidget(opacityThresholdSlider);
+    hBoxLayout2->addWidget(new QLabel("Color threshold   (transfer function)"));
+    hBoxLayout2->addWidget(colorThresholdSlider);
+
+    vBoxLayout->addLayout(hBoxLayout1, 1);
+    vBoxLayout->addLayout(hBoxLayout2, 1);
 
     mWidget->setLayout(vBoxLayout);
     setCentralWidget(mWidget);
@@ -18,6 +38,20 @@ MainWindow::MainWindow() {
 
     // 在后面一点执行，避免出现多线程执行完了，但是还没有初始化完 slots 的情况
     readDataProcess = QtConcurrent::run(this, &MainWindow::readData);
+}
+
+QSlider *MainWindow::createThresholdSlider(std::function<void(int)> callback, int initVal, int maxThreshold) {
+    QSlider *slider = new QSlider;
+    slider->setOrientation(Qt::Orientation::Horizontal);
+    slider->setFocusPolicy(Qt::StrongFocus);
+    slider->setTickPosition(QSlider::TicksBothSides);
+    slider->setTickInterval(100);
+    slider->setSingleStep(1);
+    slider->setMaximum(maxThreshold);
+    slider->setValue(initVal);
+    connect(slider, &QSlider::valueChanged,
+            this, callback);
+    return slider;
 }
 
 MainWindow::~MainWindow() {

@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QtConcurrent>
 #include <QtWidgets>
+#include <functional>
 #include <glm/glm.hpp>
 
 #include "raw_reader.h"
@@ -22,8 +23,10 @@ class MainWindow : public QMainWindow {
     void readData();
     void readSettings();
     void writeSettings();
+    QSlider *createThresholdSlider(std::function<void(int)> callback, int initVal, int maxThreshold = 4946);
 
     QFuture<void> readDataProcess;
+    QSlider *opacityThresholdSlider, *colorThresholdSlider;
     RawReader *rawReader;
     RayCasting *rayCasting;
     VolumeData *volumeData;

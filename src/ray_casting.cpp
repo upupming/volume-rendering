@@ -122,6 +122,9 @@ void RayCasting::paintGL() {
     program.setUniformValue("material.shininess", 32.0f);
     program.setUniformValue("reverseGradient", volumeData->reverseGradientDirection);
 
+    program.setUniformValue("opacityThreshold", opacityThreshold);
+    program.setUniformValue("colorThreshold", colorThreshold);
+
     // Tell OpenGL which VBOs to use
     if (!arrayBuf.bind()) {
         std::cout << "arrayBuf bind failed" << std::endl;
