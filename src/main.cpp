@@ -11,7 +11,7 @@ int main(int argc, char *argv[]) {
     QApplication app(argc, argv);
 
     QCoreApplication::setOrganizationName("upupming");
-    app.setApplicationName("Volume Rendering (threshold)");
+    app.setApplicationName("Volume Rendering (levoy1988)");
     app.setApplicationVersion(QT_VERSION_STR);
 
 #if _DEBUG
