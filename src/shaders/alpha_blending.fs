@@ -128,6 +128,7 @@ void main(){
     AABB bounding_box=AABB(top,bottom);
     ray_box_intersection(casting_ray,bounding_box,t_0,t_1);
     
+    // 这里 ray_start 和 ray_stop 都是在 bottom 和 top 之间的比例，在 0~1 之间，所以后面的 texture() 采样用这个值的话，是在单位立方体坐标上采样的，正好符合 texture 的使用方法
     vec3 ray_start=(o+v*t_0-bottom)/(top-bottom);
     vec3 ray_stop=(o+v*t_1-bottom)/(top-bottom);
     

@@ -81,18 +81,20 @@ void RayCasting::paintGL() {
     QMatrix4x4 model, view, projection;
 
     auto physicalSize = glm::vec3(volumeData->dim) * volumeData->spacing;
+    // 最长的边为 1，其他的边可能小一点，比例符合体数据原始物理尺寸
     auto identityCubeSize = physicalSize / std::max({physicalSize.x, physicalSize.y, physicalSize.z});
-    // 将边长为 2 的立方体变成满足 ratio2LogestSide 比例的长方体
-    QVector3D sideLen = QVector3D(identityCubeSize.x, identityCubeSize.y, identityCubeSize.z) / 2.f;
-    model.scale(sideLen);
+    QVector3D halfSideLen = QVector3D(identityCubeSize.x, identityCubeSize.y, identityCubeSize.z) / 2.f;
+    // 将边长为 2 的立方体变成满足 identityCubeSize 长宽高的长方体
+    model.scale(halfSideLen);
 
+    // 在 shader 里面 texture 采样的时候用的索引是没有旋转的，都是在 [0, 1) 区间内的采样，因此我们只能通过 view 的逆旋转表示 model 的旋转
     view.rotate(QQuaternion(curr_quat[3], -curr_quat[0], -curr_quat[1], -curr_quat[2]));
     auto lookAtMatrix = glm::lookAt(eye, lookat, up);
     auto p = glm::value_ptr(lookAtMatrix);
     view = QMatrix4x4(p).transposed() * view;
 
     float aspectRatio = (float)width() / height();
-    projection.perspective(fov, aspectRatio, 0.1f, 100.0f);
+    projection.perspective(fov, aspectRatio, zNear, zFar);
 
     auto mvpMatrix = projection * view * model;
     program.setUniformValue("modelMatrix", model);
@@ -108,8 +110,8 @@ void RayCasting::paintGL() {
     program.setUniformValue("aspectRatio", aspectRatio);
     program.setUniformValue("focalLength", focalLength);
 
-    program.setUniformValue("top", sideLen);
-    program.setUniformValue("bottom", -sideLen);
+    program.setUniformValue("top", halfSideLen);
+    program.setUniformValue("bottom", -halfSideLen);
     program.setUniformValue("stepLength", 0.001f);
     program.setUniformValue("backgroundColor", QVector3D(backgroundColor.redF(), backgroundColor.greenF(), backgroundColor.blueF()));
     program.setUniformValue("gamma", 2.2f);
