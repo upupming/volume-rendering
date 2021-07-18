@@ -101,7 +101,9 @@ void RayCasting::paintGL() {
     program.setUniformValue("mvpMatrix", mvpMatrix);
 
     program.setUniformValue("viewportSize", QVector2D{(float)width(), (float)height()});
-    // 物体进行变换等价于视点进行逆变换
+    // raycasting 的计算过程都是在缩放之后的单位 identityCube 上进行的，计算出结果之后再进行 view 变换展示出来
+    // view 变换之后要保证眼睛在圆心，相当于倒推眼睛在哪里
+    // 同样 view 变换之后眼睛距离渲染平面的距离为 focalLength，视角为 fov，在 shader 中计算出来的光线方向也是需要进行 view 逆变换到世界坐标系的
     program.setUniformValue("rayOrigin", view.inverted() * QVector3D({0.0, 0.0, 0.0}));
     program.setUniformValue("aspectRatio", aspectRatio);
     program.setUniformValue("focalLength", focalLength);
