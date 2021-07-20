@@ -118,9 +118,9 @@ void RayCasting::paintGL() {
 
     program.setUniformValue("normalMatrix", (view * model).normalMatrix());
     program.setUniformValue("light.position", 1.2f, 1.0f, 2.0f);
-    program.setUniformValue("light.ambient", 0.1f, 0.1f, 0.1f, 0.1f);
-    program.setUniformValue("light.diffuse", 1.0f, 1.0f, 1.0f, 1.0f);
-    program.setUniformValue("light.specular", 1.0f, 1.0f, 1.0f, 1.0f);
+    program.setUniformValue("light.ambient", 0.2f, 0.2f, 0.2f, 1.f);
+    program.setUniformValue("light.diffuse", 0.5f, 0.5f, 0.5f, 1.f);
+    program.setUniformValue("light.specular", 1.0f, 1.0f, 1.0f, 1.f);
     // material properties
     program.setUniformValue("material.specular", 1.f, 1.f, 1.f, 0.f);
     program.setUniformValue("material.shininess", 32.0f);

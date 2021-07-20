@@ -111,10 +111,29 @@ vec4 color_transfer(float ratio)
 // Estimate normal from a finite difference approximation of the gradient
 vec3 normal(vec3 position,float intensity)
 {
-    float d=stepLength;
+    float d=stepLength*30;
+    // float dx=texture(volume,position+vec3(d,0,0)).r-texture(volume,position+vec3(-d,0,0)).r;
+    // dx+=texture(volume,position+vec3(d,d,0)).r-texture(volume,position+vec3(-d,d,0)).r;
+    // dx+=texture(volume,position+vec3(d,-d,0)).r-texture(volume,position+vec3(-d,-d,0)).r;
+    // dx+=texture(volume,position+vec3(d,0,d)).r-texture(volume,position+vec3(-d,0,d)).r;
+    // dx+=texture(volume,position+vec3(d,0,-d)).r-texture(volume,position+vec3(-d,0,-d)).r;
+    
+    // float dy=texture(volume,position+vec3(0,d,0)).r-texture(volume,position+vec3(0,-d,0)).r;
+    // dy+=texture(volume,position+vec3(d,d,0)).r-texture(volume,position+vec3(d,-d,0)).r;
+    // dy+=texture(volume,position+vec3(-d,d,0)).r-texture(volume,position+vec3(-d,-d,0)).r;
+    // dy+=texture(volume,position+vec3(0,d,d)).r-texture(volume,position+vec3(0,-d,d)).r;
+    // dy+=texture(volume,position+vec3(0,d,-d)).r-texture(volume,position+vec3(0,-d,-d)).r;
+    
+    // float dz=texture(volume,position+vec3(0,0,d)).r-texture(volume,position+vec3(0,0,-d)).r;
+    // dz+=texture(volume,position+vec3(d,0,d)).r-texture(volume,position+vec3(d,0,-d)).r;
+    // dz+=texture(volume,position+vec3(-d,0,d)).r-texture(volume,position+vec3(-d,0,-d)).r;
+    // dz+=texture(volume,position+vec3(0,d,d)).r-texture(volume,position+vec3(0,d,-d)).r;
+    // dz+=texture(volume,position+vec3(0,-d,d)).r-texture(volume,position+vec3(0,-d,-d)).r;
+    
     float dx=texture(volume,position+vec3(d,0,0)).r-intensity;
     float dy=texture(volume,position+vec3(0,d,0)).r-intensity;
     float dz=texture(volume,position+vec3(0,0,d)).r-intensity;
+    
     return normalize(normalMatrix*((reverseGradient?-1:1)*vec3(dx,dy,dz)));
 }
 
@@ -151,7 +170,7 @@ void main(){
         vec4 ambient=light.ambient*c;
         // diffuse
         vec3 norm=normal(position,intensity);
-        vec3 lightDir=normalize(light.position-position);
+        vec3 lightDir=normalize((inverse(viewMatrix)*vec4(light.position,0)).xyz-position);
         float diff=max(dot(norm,lightDir),0.);
         vec4 diffuse=light.diffuse*(diff*c);
         
