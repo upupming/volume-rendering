@@ -132,6 +132,11 @@ jobs:
           cd ${{ env.buildDir }}
           windeployqt.exe --release --qmldir .. ./${{ env.name }}.exe
           Get-PsDrive
+      - name: The job has failed
+        if: ${{ failure() }}
+        run: |
+          ls ${{ env.srcDir }}/build/
+          cat ${{ env.srcDir }}/build/vcpkg-manifest-install.log
 
       - name: Set outputs
         id: vars
