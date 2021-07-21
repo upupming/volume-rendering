@@ -4,6 +4,13 @@ cmake_minimum_required(VERSION 3.14)
 # https://code.visualstudio.com/docs/cpp/faq-cpp#_how-do-i-get-intellisense-to-work-correctly
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+# https://stackoverflow.com/a/9328525/8242705
+get_cmake_property(_variableNames VARIABLES)
+list (SORT _variableNames)
+foreach (_variableName ${_variableNames})
+    message(STATUS "${_variableName}=${${_variableName}}")
+endforeach()
+
 list(APPEND VCPKG_FEATURE_FLAGS "versions")
 # Setup vcpkg script with CMake (note: should be placed before project() call)
 if(DEFINED ENV{VCPKG_ROOT})

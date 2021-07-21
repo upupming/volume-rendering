@@ -69,6 +69,7 @@ jobs:
           ls ${{ env.srcDir }}/
           ls ${{ env.srcDir }}/.git
           ls ${{ env.srcDir }}/vcpkg
+          cmake --version
 
       - name: Install Python 3.7 version
         uses: actions/setup-python@v1
@@ -127,6 +128,7 @@ jobs:
         # https://stackoverflow.com/questions/31262342/cmake-g-ninja-on-windows-specify-x64?rq=1
         run: |
           Get-PsDrive
+          cmake --version
           ninja --version
           cmake -S ${{ env.srcDir }} -B ${{ env.buildDir }} -GNinja -DCMAKE_BUILD_TYPE=Release
           cmake --build ${{ env.buildDir }} --target all --parallel $(nproc)
